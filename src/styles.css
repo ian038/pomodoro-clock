@@ -1,0 +1,50 @@
+body {
+    text-align: center;
+    background: #5C258D;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #4389A2, #5C258D);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #4389A2, #5C258D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: white;
+    display: block;
+    margin: 8px;
+}
+
+.App {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-title {
+    font-size: 50px;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.length-control {
+    display: inline-block;
+    width: 250px;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.timer {
+    border: 3px solid whitesmoke;
+    width: 270px;
+    height: 270px;
+    border-radius: 50%;
+    position: relative;
+    margin: auto;
+}
+
+.timer-wrapper {
+    position: absolute;
+    width: 190px;
+    height: 110px;
+    left: 50%;
+    top: 50%;
+    margin-left: -95px;
+    margin-top: -57px;
+}
