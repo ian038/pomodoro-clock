@@ -8,18 +8,15 @@ import { IconButton } from '@material-ui/core'
 
 momentDurationFormatSetup(moment)
 
-export default function Timer({ timerLabel, timeLeft, handleStartStop, isActive, handleReset, audioElement }) {
-
-    const formattedTimeLeft = moment.duration(timeLeft, 's').format('mm:ss', { trim: false })
-    console.log(formattedTimeLeft)
-    
+export default function Timer({ timerLabel, timeLeft, isActive, handleReset, audioElement }) {
+    const [active, setActive] = isActive    
     return (
         <div className="timer" style={{ color: 'white' }}>
         <div className="timer-wrapper">
             <div id="timer-label" style={{ fontSize: '50px' }}>{timerLabel}</div>
-            <div id="time-left" style={{ fontSize: '50px' }}>{formattedTimeLeft}</div>
-            <IconButton onClick={handleStartStop} id="start_stop">
-                { isActive ? <StopIcon style={{ fill: 'white' }} /> : <PlayArrowIcon style={{ fill: 'white' }} />}
+            <div id="time-left" style={{ fontSize: '50px' }}>{timeLeft === 3600000 ? "60:00" : moment(timeLeft).format('mm:ss')}</div>
+            <IconButton id="start_stop" onClick={() => setActive(!active)}>
+                { active ? <StopIcon style={{ fill: 'white' }} /> : <PlayArrowIcon style={{ fill: 'white' }} />}
             </IconButton>
             <IconButton id="reset" onClick={handleReset}>
                 <RotateLeftIcon style={{ fill: 'white' }} />

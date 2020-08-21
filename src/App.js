@@ -4,86 +4,76 @@ import './styles.css'
 import Break from './components/Break'
 import Session from './components/Session'
 import Timer from './components/Timer'
+import { useInterval } from './Hooks'
 
 function App() {
   const audioElement = useRef(null)
-  const [breakLength, setBreakLength] = useState(60 * 5)
-  const [sessionLength, setSessionLength] = useState(60 * 25)
+  const [breakLength, setBreakLength] = useState(5)
+  const [sessionLength, setSessionLength] = useState(25)
   const [currSessionType, setCurrSessionType] = useState('Session')
-  const [timeLeft, setTimeLeft] = useState(sessionLength)
-  const [intervalID, setIntervalID] = useState(null)
+  const [timeLeft, setTimeLeft] = useState(sessionLength * 60 * 1000)
+  const [active, setActive] = useState(false)
 
   // dynamically change time left
   useEffect(() => {
-      setTimeLeft(sessionLength)
+    setTimeLeft(sessionLength * 60 * 1000)
   }, [sessionLength])
 
   // listen to time left 
   useEffect(() => {
-    if(timeLeft === 0) {
+    if(timeLeft === 0 && currSessionType === 'Session') {
       audioElement.current.play()
-      if(currSessionType === 'Session') {
-        setCurrSessionType('Break')
-        setTimeLeft(breakLength)
-      } else if(currSessionType === 'Break') {
+      setCurrSessionType('Break')
+      setTimeLeft(breakLength * 60 * 1000)
+    } else if(timeLeft === 0 && currSessionType === 'Break') {
         setCurrSessionType('Session')
-        setTimeLeft(sessionLength)
+        setTimeLeft(sessionLength * 60 * 1000)
       }
-    }
-  }, [breakLength, currSessionType, sessionLength, timeLeft])
+    }, [breakLength, currSessionType, sessionLength, timeLeft])
+
+  useInterval(() => setTimeLeft(timeLeft - 1000), active ? 1000 : null)
 
   const decrementBreakLength = () => {
-      const newBreakLength = breakLength - 60
-      if(newBreakLength > 0) {
-        setBreakLength(newBreakLength)
-      }
+    if(breakLength === 1) {
+      return null
+    } else {
+      setBreakLength(breakLength - 1)
     }
+  }
   
   const incrementBreakLength = () => {
-    const newBreakLength = breakLength + 60
-    if(newBreakLength <= 60 * 60) {
-      setBreakLength(newBreakLength)
+    if(breakLength >= 60) {
+      return null
+    } else {
+      setBreakLength(breakLength + 1)
     }
   }
   
   const decrementSessionLength = () => {
-    const newSessionLength = sessionLength - 60
-    if(newSessionLength > 0) {
-      setSessionLength(newSessionLength)
+    if(sessionLength === 1) {
+      return null
+    } else {
+      setSessionLength(sessionLength - 1)
     }
   }
 
   const incrementSessionLength = () => {
-    const newSessionLength = sessionLength + 60
-    if(newSessionLength <= 60 * 60) {
-      setSessionLength(newSessionLength)
+    if(sessionLength >= 60) {
+      return null
+    } else {
+      setSessionLength(sessionLength + 1)
     }
-  }
-
-  const isActive = intervalID !== null
-
-  const handleStartStop = () => {
-      // check if timer is active or not
-      if(isActive) {
-        clearInterval(intervalID)
-        setIntervalID(null)
-      } else {
-        const newIntervalID = setInterval(() => {
-          setTimeLeft(prevTimeLeft => prevTimeLeft - 1)
-        }, 1000)
-        setIntervalID(newIntervalID)
-      }
   }
 
   const handleReset = () => {
     // reset everything
+    audioElement.current.pause()
     audioElement.current.load()
-    clearInterval(intervalID)
-    setIntervalID(null)
     setCurrSessionType('Session')
-    setSessionLength(60 * 25)
-    setBreakLength(60 * 5)
-    setTimeLeft(60 * 25)
+    setSessionLength(25)
+    setBreakLength(5)
+    setTimeLeft(25 * 60 * 1000)
+    setActive(false)
   }
   
   return (
@@ -101,9 +91,8 @@ function App() {
         <Timer
          timerLabel={currSessionType}
          timeLeft={timeLeft}
-         handleStartStop={handleStartStop}
          handleReset={handleReset}
-         isActive={isActive}
+         isActive={[active, setActive]}
          audioElement={audioElement}
          />
       </main>
